@@ -1,0 +1,65 @@
+@page
+@model WebTN.Pages_Blog.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    int i =0;
+}
+
+
+<h1>Danh Sách Các Bài Viết</h1>
+<form method="get" asp-page="./Index">
+    <label>Tìm kiếm</label>
+    <input name="SearchString" value="@Model.SearchString" placeholder="Tiêu đề" />
+    <button type="submit">Tìm</button>
+</form>
+
+<p></p>
+
+<p>
+    <a class="btn btn-primary" asp-page="Create">Tạo Bài Viết Mới</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <td>STT</td>
+            <th>
+                @Html.DisplayNameFor(model => model.Article[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Article[0].Created)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Article) {
+        <tr>
+            <td>@(++i)</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Chỉnh sửa</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Xem</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Xoá</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+@{
+    var paging = new PagingModel()
+    {
+        countPages = Model.CountPages,
+        currentPage = Model.CurrentPage,
+        generateUrl = (int? index) => Url.Page("/Blog/Index",new {SearchString = Model.SearchString , p = index}),
+    };    
+}
+
+<partial name="_Paging" model="@paging" ></partial>
