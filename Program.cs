@@ -12,7 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddOptions();
 
 
-builder.Services.AddDbContext<MyBlogContext>( options =>
+builder.Services.AddDbContext<MyBlogContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyBlogContext"));
 });
@@ -20,12 +20,12 @@ builder.Services.AddDbContext<MyBlogContext>( options =>
 // Add send mail services
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 //builder.Services.AddSingleton<IEmailSender<AppUser>,SendMailService>();
-builder.Services.AddSingleton<IEmailSender,SendMailService>();
+builder.Services.AddSingleton<IEmailSender, SendMailService>();
 
 
 // Add Identity options
-
-builder.Services.Configure<IdentityOptions> (options => {
+builder.Services.Configure<IdentityOptions>(options =>
+{
     // Thiết lập về Password
     options.Password.RequireDigit = false; // Không bắt phải có số
     options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
@@ -35,7 +35,7 @@ builder.Services.Configure<IdentityOptions> (options => {
     options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
 
     // Cấu hình Lockout - khóa user
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes (5); // Khóa 5 phút
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Khóa 5 phút
     options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
     options.Lockout.AllowedForNewUsers = true;
 
@@ -47,11 +47,11 @@ builder.Services.Configure<IdentityOptions> (options => {
     // Cấu hình đăng nhập.
     options.SignIn.RequireConfirmedEmail = true;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
     options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
-
+    options.SignIn.RequireConfirmedAccount = true;         // Xác thực trước khi đăng nhập
 });
 
 
-builder.Services.AddIdentity<AppUser,IdentityRole>()
+builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyBlogContext>()
                 .AddDefaultTokenProviders();
 
@@ -59,6 +59,15 @@ builder.Services.AddIdentity<AppUser,IdentityRole>()
 // builder.Services.AddDefaultIdentity<AppUser>()
 //                 .AddEntityFrameworkStores<MyBlogContext>()
 //                 .AddDefaultTokenProviders();
+
+// Authorization services
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/login/";
+    options.LogoutPath = "/logout/";
+    options.AccessDeniedPath = "/khongthetrycap/";
+});
+
 
 var app = builder.Build();
 
