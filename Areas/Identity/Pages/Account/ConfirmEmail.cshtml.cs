@@ -51,7 +51,8 @@ namespace WebTN.Areas.Identity.Pages.Account
 
             if(result.Succeeded)
             {
-                return LocalRedirect("/login/");
+                var returnUrl = Url.Content("/login/");
+                return LocalRedirect(returnUrl);
             }
             else
             {
