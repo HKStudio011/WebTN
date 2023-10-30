@@ -41,7 +41,7 @@ namespace WebTN.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage ="Phải nhập {0}.")]
             [EmailAddress]
             public string Email { get; set; }
 
@@ -49,8 +49,9 @@ namespace WebTN.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage ="Phải nhập {0}.")]
+            [Display(Name = "Mật khẩu mới")]
+            [StringLength(100, ErrorMessage = "{0} phải dì từ {2} đén {1} ký tự.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -59,8 +60,8 @@ namespace WebTN.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Nhập lại mật khẩu")]
+            [Compare("Password", ErrorMessage = "Mật khẩu nhập lại chưa chính xác.")]
             public string ConfirmPassword { get; set; }
 
             /// <summary>
@@ -76,7 +77,7 @@ namespace WebTN.Areas.Identity.Pages.Account
         {
             if (code == null)
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest("Mã token không chính xác.");
             }
             else
             {

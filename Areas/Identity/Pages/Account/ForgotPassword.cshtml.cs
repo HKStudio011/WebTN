@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebTN.Models;
 
 namespace WebTN.Areas.Identity.Pages.Account
@@ -45,7 +46,7 @@ namespace WebTN.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage ="Phải nhập {0}.")]
             [EmailAddress]
             public string Email { get; set; }
         }
@@ -58,8 +59,11 @@ namespace WebTN.Areas.Identity.Pages.Account
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
-                    return RedirectToPage("./ForgotPasswordConfirmation");
+                    // return RedirectToPage("./ForgotPasswordConfirmation");
+                    ModelState.AddModelError(string.Empty,"Email không tồn tại hoặc chưa được xác thực. Vui lòng kiểm tra lại.");
+                    return Page();
                 }
+                
 
                 // For more information on how to enable account confirmation and password reset please
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
@@ -73,8 +77,8 @@ namespace WebTN.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Lấy lại mật khẩu",
+                    $"Lấy lại mật khẩu bằng cách <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Bấm vào đây</a>.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
