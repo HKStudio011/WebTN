@@ -86,7 +86,7 @@ namespace WebTN.Areas.Identity.Pages.Account
             [EmailAddress]
             public string Email { get; set; }
         }
-        
+
         public IActionResult OnGet() => RedirectToPage("./Login");
 
         public IActionResult OnPost(string provider, string returnUrl = null)
@@ -100,15 +100,16 @@ namespace WebTN.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
+
             if (remoteError != null)
             {
-                ErrorMessage = $"Error from external provider: {remoteError}";
+                ErrorMessage = $"Lỗi dịch vụ ngoài: {remoteError}";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information.";
+                ErrorMessage = "Lỗi không lấy được thông tin dịch vụ ngoài.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -126,6 +127,9 @@ namespace WebTN.Areas.Identity.Pages.Account
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
+                // — Co tai khoan, chua lien ket => Lien ket tai khoan voi dich vu ngoai
+                // - Chua co tai khoan => Tao tai khoan, lien ket, dang nhap
+
                 ReturnUrl = returnUrl;
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
@@ -146,51 +150,118 @@ namespace WebTN.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information during confirmation.";
+                ErrorMessage = "Lỗi láy thông tin từ dịch vụ ngoài.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+                var registerUser = await _userManager.FindByEmailAsync(Input.Email);
+                AppUser externalUser = null;
+                string externalEmail = null;
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
+                    externalEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
+                }
+
+                if (externalEmail != null)
+                {
+                    externalUser = await _userManager.FindByEmailAsync(externalEmail);
+                }
+
+                if (registerUser != null && externalUser != null)
+                {
+                    if (registerUser.Id == externalUser.Id)
                     {
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code },
-                            protocol: Request.Scheme);
-
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                        // If account confirmation is required, we need to show the link if we don't have a real email sender
-                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        var resultLink = await _userManager.AddLoginAsync(registerUser, info);
+                        if (resultLink.Succeeded)
                         {
-                            return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
+                            await _signInManager.SignInAsync(registerUser, isPersistent: false);
+                            return LocalRedirect(returnUrl);
                         }
-
-                        await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Không liên kết được tài khoản. Vui lòng thử email khác.");
+                        return Page();
                     }
                 }
-                foreach (var error in result.Errors)
+                else if (externalUser != null && registerUser == null)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, "Không hỗ trợ liên kết được tài khoản với email khác với email của dịch vụ ngoài. Vui lòng thử email khác.");
+                    return Page();
                 }
+                else if (externalUser == null && externalEmail == Input.Email)
+                {
+                    var user = CreateUser();
+
+                    await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                    var result = await _userManager.CreateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddLoginAsync(user, info);
+                        if (result.Succeeded)
+                        {
+                            _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
+                            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                            await _userManager.ConfirmEmailAsync(user, code);
+                            await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                            return LocalRedirect(returnUrl);
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Không tạo được tài khoản mới.");
+                    }
+
+                }
+                else
+                {
+                    var user = CreateUser();
+
+                    await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                    var result = await _userManager.CreateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddLoginAsync(user, info);
+                        if (result.Succeeded)
+                        {
+                            _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
+                            var userId = await _userManager.GetUserIdAsync(user);
+                            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                            var callbackUrl = Url.Page(
+                                "/Account/ConfirmEmail",
+                                pageHandler: null,
+                                values: new { area = "Identity", userId = userId, code = code },
+                                protocol: Request.Scheme);
+
+                            await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                                $"Kích hoạt tài khoản <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Bấm vào đây</a>.");
+
+                            // If account confirmation is required, we need to show the link if we don't have a real email sender
+                            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                            {
+                                return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
+                            }
+
+                            await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                            return LocalRedirect(returnUrl);
+                        }
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+
             }
 
             ProviderDisplayName = info.ProviderDisplayName;

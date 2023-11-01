@@ -50,7 +50,24 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.SignIn.RequireConfirmedAccount = true;         // Xác thực trước khi đăng nhập
 });
 
+// dang nhap bang dich vu ngoai
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        var google = builder.Configuration.GetSection("Authentication:Google");
+        options.ClientId = google["ClientId"];
+        options.ClientSecret = google["ClientSecret"];
+        options.CallbackPath = "/dang-nhap-tu-google";
+    })
+    .AddFacebook(options => 
+    {
+        var facebook = builder.Configuration.GetSection("Authentication:Facebook");
+        options.AppId = facebook["AppId"];
+        options.AppSecret = facebook["AppSecret"];
+        options.CallbackPath = "/dang-nhap-tu-facebook";
+    });
 
+// Use UI custom
 builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyBlogContext>()
                 .AddDefaultTokenProviders();
