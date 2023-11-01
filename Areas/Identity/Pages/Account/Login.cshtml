@@ -2,15 +2,21 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Đăng Nhập";
+    var thongBao = TempData["ErrorMessage"];
 }
 
 <h1>@ViewData["Title"]</h1>
+@if(TempData.ContainsKey("ErrorMessage"))
+{
+    <partial name="/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="@thongBao"></partial>
+}
+
 <div class="row">
     <div class="col-md-4">
         <section>
             <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
+                <h2>Thông tin đăng nhập</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
@@ -48,7 +54,7 @@
     </div>
     <div class="col-md-6 col-md-offset-2">
                 <section>
-            <h3>Đăng ký bằng cách khác.</h3>
+            <h3>Đăng nhập bằng cách khác.</h3>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
