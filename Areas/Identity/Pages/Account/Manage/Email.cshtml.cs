@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ using WebTN.Models;
 
 namespace WebTN.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class EmailModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -70,7 +72,7 @@ namespace WebTN.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "New email")]
+            [Display(Name = "Email mới")]
             public string NewEmail { get; set; }
         }
 
@@ -126,14 +128,14 @@ namespace WebTN.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Xác nhận địa chỉ email",
+                    $"Kích hoạt tài khoản <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Bấm vào đây</a>.");
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Vui lòng kiểm tra email.";
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "Email của bạn đã được đổi.";
             return RedirectToPage();
         }
 
@@ -162,10 +164,10 @@ namespace WebTN.Areas.Identity.Pages.Account.Manage
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                "Xác nhận địa chỉ email",
+                $"Kích hoạt tài khoản <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Bấm vào đây</a>.");
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "Vui lòng kiểm tra email.";
             return RedirectToPage();
         }
     }

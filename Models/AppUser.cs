@@ -10,5 +10,8 @@ namespace WebTN.Models
         [Column(TypeName ="nvarchar")]
         [StringLength(400)]
         public string? HomeAddress { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? BirthDate { get; set; }
     }
 }

@@ -49,18 +49,25 @@ namespace WebTN.Areas.Identity.Pages.Account
             var result = await _userManager.ChangeEmailAsync(user, email, code);
             if (!result.Succeeded)
             {
-                StatusMessage = "Error changing email.";
+                StatusMessage = "Lỗi email không được thay đổi.";
                 return Page();
             }
 
             // In our UI email and user name are one and the same, so when we update the email
             // we need to update the user name.
-            var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
-            if (!setUserNameResult.Succeeded)
+
+            var oldEmail = user.Email;
+            if(oldEmail == user.UserName)
             {
-                StatusMessage = "Error changing user name.";
-                return Page();
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
+                if (!setUserNameResult.Succeeded)
+                {
+                    StatusMessage = "Error changing user name.";
+                    return Page();
+                }
             }
+
+
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Thank you for confirming your email change.";
