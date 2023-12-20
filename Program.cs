@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using WebTN.Models;
-//using WebTN.Services;
+using WebTN.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +16,10 @@ builder.Services.AddDbContext<MyBlogContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyBlogContext"));
 });
+
+
+// Add custom IdentityErrorDescriber 
+builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
 
 // Add send mail services
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
@@ -85,7 +89,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/khongthetrycap/";
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -101,9 +104,17 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Authentication phai truoc Authorization (doi cho se loi khong dang nhap vao trang co phan quyen)
+app.UseAuthentication();
 app.UseAuthorization();
-//app.UseAuthentication();
+
 
 app.MapRazorPages();
 
 app.Run();
+
+
+ // dotnet-aspnet-codegenerator.exe razorpage -m WebTN.Models.Article -dc WebTN.Models.MyBlogContext -outDir Pages/Blog -udl --referenceScriptLibraries
+ // dotnet-aspnet-codegenerator.exe identity -dc WebTN.Models.MyBlogContext
+ // dotnet new page -n Index -o Areas\Admin\Pages\Role -na WebTN.Admin.Role // NET old
+//  dotnet new page -n Index -o Areas\Admin\Pages\Role -p:n WebTN.Admin.Role  // NET new

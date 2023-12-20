@@ -1,0 +1,58 @@
+﻿@page "/admin/member"
+@model WebTN.Admin.User.IndexModel
+@{
+    ViewData["Title"] = "Danh Sách Các Thành viên";
+}
+
+<H1>@ViewData["Title"]</H1>
+
+<form method="get" asp-page="./Index">
+    <label>Tìm kiếm</label>
+    <input name="SearchString" value="@Model.SearchString" placeholder="User" />
+    <button type="submit">Tìm</button>
+</form>
+
+<div>
+    <partial name="_StatusMessage.cshtml" model="@Model.StatusMessage"></partial>
+</div>
+
+<p>Tổng số thành viên: @Model.TotalUser</p>
+
+<table class="table">
+    <tr>
+        <th>Tên user</th>
+        <th>Role</th>
+        <th>Tác vụ</th>
+    </tr>
+    @foreach(var user in Model.Users)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td>
+                @if(string.IsNullOrEmpty(user.RoleNames))
+                {
+                    <a class="btn btn-success btn-sm" asp-page="./AddRole" asp-route-id="@user.Id" >Thêm role</a>
+                }
+                else
+                {
+                    <a class="btn btn-success btn-sm" asp-page="./AddRole" asp-route-id="@user.Id" >@user.RoleNames</a>
+                }
+
+            </td>
+            <td>
+                <a class="btn btn-success btn-sm" asp-page="./SetPassword" asp-route-id="@user.Id" >Đặt mật khẩu</a>
+            </td>
+        </tr>
+    }
+</table>
+
+@{
+    var paging = new PagingModel()
+    {
+        countPages = Model.CountPages,
+        currentPage = Model.CurrentPage,
+        generateUrl = (int? index) => Url.Page("./Index",new {SearchString = Model.SearchString , p = index}),
+    };    
+}
+
+<partial name="_Paging" model="@paging" ></partial>

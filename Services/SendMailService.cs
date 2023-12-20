@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using WebTN.Models;
 
-//namespace WebTN.Services;
+namespace WebTN.Services;
 
 public class MailSettings
 {

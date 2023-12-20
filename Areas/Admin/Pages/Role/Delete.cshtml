@@ -1,0 +1,29 @@
+﻿@page "/admin/delete-role/{roleid}"
+@model WebTN.Admin.Role.DeleteModel
+@{
+    ViewData["Title"] = "Xoá Role";
+}
+
+<H1>@ViewData["Title"]</H1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <p>Bạn có chắc muốn xoá role <strong>@Model.role.Name</strong> không?</p>
+            <div class="form-group">
+                <input type="submit" value="Xoá" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("/Pages/Shared/_ValidationScriptsPartial.cshtml");}
+}
+

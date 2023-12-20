@@ -1,0 +1,47 @@
+﻿@page "/admin/add-user-role/{id}"
+@model WebTN.Admin.User.AddRoleModel
+@{
+    ViewData["Title"] = "Thêm Role";
+    @* ViewData["ActivePage"] = ManageNavPages.ChangePassword; *@
+}
+
+
+
+<h3>Thiêt lập role cho thành viên: @Model.user.UserName</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="set-password-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-group mb-3">
+                <label asp-for="RoleNames" class="form-label"></label>
+                @Html.ListBoxFor( m => m.RoleNames,@Model.selectList, new {
+                    id = "id-select-roles",
+                    @* @class = "form-control h-auto"  *@
+                    @class ="w-100"
+                })
+                <span asp-validation-for="RoleNames" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Thêm</button>
+            <a class="btn btn-primary" asp-page="./Index">Danh sách thành viên</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/multiple-select/multiple-select.min.js"></script>
+    <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css">
+
+    <script>
+        $('#id-select-roles').multipleSelect(
+            {
+                selecAll:false,
+                keepOpen:false,
+                isOpen:false,
+            }
+        );
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}
