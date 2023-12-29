@@ -11,10 +11,10 @@ namespace WebTN.Admin.Role
         protected readonly MyBlogContext _myBlogContext;
 
         [TempData]
-        public string StatusMessage {get;set;}
-        public RolePageModel(RoleManager<IdentityRole> roleManager,MyBlogContext myBlogContext)
+        public string StatusMessage { get; set; }
+        public RolePageModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
         {
-            _roleManager= roleManager;
+            _roleManager = roleManager;
             _myBlogContext = myBlogContext;
         }
     }

@@ -7,10 +7,16 @@ using WebTN.Models;
 
 namespace WebTN.Admin.Role
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class IndexModel : RolePageModel
     {
-        public List<IdentityRole> IdentityRoles {get; set;}
+        public class RoleModel : IdentityRole
+        {
+            public string[] Claims { get; set; }
+
+        }
+
+        public List<RoleModel> IdentityRoles { get; set; }
 
         public IndexModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
         {
@@ -18,7 +24,22 @@ namespace WebTN.Admin.Role
 
         public async Task OnGet()
         {
-           IdentityRoles = await _roleManager.Roles.OrderBy(r => r.Name).ToListAsync();
+            var roles = await _roleManager.Roles.OrderBy(r => r.Name).ToListAsync();
+            IdentityRoles = new List<RoleModel>();
+
+            foreach (var role in roles)
+            {
+
+                var rm = new RoleModel()
+                {
+                    Id = role.Id,
+                    Name = role.Name,
+                };
+                rm.Claims = (await _roleManager.GetClaimsAsync(role))
+                            .Select(c => c.Type + "=" + c.Value)
+                            .ToArray();
+                IdentityRoles.Add(rm);
+            }
         }
 
         public void OnPost() => RedirectToPage();
