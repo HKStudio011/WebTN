@@ -89,6 +89,19 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/khongthetrycap/";
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AllowEditRole", policyBuilder =>
+    {
+        policyBuilder.RequireAuthenticatedUser();
+        // policyBuilder.RequireRole("Admin");
+        // policyBuilder.RequireRole("Editor");
+
+        // policyBuilder.RequireClaim("manager.role", "add", "update");
+        policyBuilder.RequireClaim("canedit", "user");
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -108,13 +121,12 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapRazorPages();
 
 app.Run();
 
 
- // dotnet-aspnet-codegenerator.exe razorpage -m WebTN.Models.Article -dc WebTN.Models.MyBlogContext -outDir Pages/Blog -udl --referenceScriptLibraries
- // dotnet-aspnet-codegenerator.exe identity -dc WebTN.Models.MyBlogContext
- // dotnet new page -n Index -o Areas\Admin\Pages\Role -na WebTN.Admin.Role // NET old
+// dotnet-aspnet-codegenerator.exe razorpage -m WebTN.Models.Article -dc WebTN.Models.MyBlogContext -outDir Pages/Blog -udl --referenceScriptLibraries
+// dotnet-aspnet-codegenerator.exe identity -dc WebTN.Models.MyBlogContext
+// dotnet new page -n Index -o Areas\Admin\Pages\Role -na WebTN.Admin.Role // NET old
 //  dotnet new page -n Index -o Areas\Admin\Pages\Role -p:n WebTN.Admin.Role  // NET new

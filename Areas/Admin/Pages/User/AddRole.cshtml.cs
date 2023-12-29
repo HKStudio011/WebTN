@@ -11,25 +11,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using WebTN.Models;
 
 namespace WebTN.Admin.User
 {
-    [Authorize(Roles ="Admin")]
+    //[Authorize(Policy = "AllowEditRole")]
+    [Authorize(Roles = "Admin")]
     public class AddRoleModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _rolenManager;
+        private readonly MyBlogContext _myBlogContext;
+
+
 
         public AddRoleModel(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            RoleManager<IdentityRole> rolenManager)
+            RoleManager<IdentityRole> rolenManager,
+            MyBlogContext myBlogContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-           _rolenManager = rolenManager;
+            _rolenManager = rolenManager;
+            _myBlogContext = myBlogContext;
         }
 
 
@@ -45,16 +52,20 @@ namespace WebTN.Admin.User
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
 
-        public AppUser user {get;set;}
-        public SelectList selectList {get;set;}
+        public AppUser user { get; set; }
+        public SelectList selectList { get; set; }
+
+        public List<IdentityRoleClaim<string>> RoleClaims { get; set; }
+        public List<IdentityUserClaim<string>> UserClaims { get; set; }
+
 
         [BindProperty]
-        [DisplayName( "Các role của user")]
-        public string[] RoleNames {get;set;}
+        [DisplayName("Các role của user")]
+        public string[] RoleNames { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if(string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound($"Không có user");
             }
@@ -65,18 +76,38 @@ namespace WebTN.Admin.User
             }
 
             RoleNames = (await _userManager.GetRolesAsync(user)).ToArray<string>();
-            selectList = new  SelectList(_rolenManager.Roles.Select(r => r.Name)); 
+            selectList = new SelectList(_rolenManager.Roles.Select(r => r.Name));
+
+            await GetClaim(id);
 
             return Page();
         }
 
+        private async Task GetClaim(string id)
+        {
+            var listROle = from r in _myBlogContext.Roles
+                           join ur in _myBlogContext.UserRoles on r.Id equals ur.RoleId
+                           where ur.UserId == id
+                           select r;
+
+            var claimInRole = from c in _myBlogContext.RoleClaims
+                              join r in listROle on c.RoleId equals r.Id
+                              select c;
+
+            RoleClaims = await claimInRole.ToListAsync();
+
+            UserClaims = await (from c in _myBlogContext.UserClaims
+                                where c.UserId == id
+                                select c).ToListAsync();
+        }
+
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            if(string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound($"Không có user");
             }
-            
+
             user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -88,25 +119,30 @@ namespace WebTN.Admin.User
             {
                 return Page();
             }
-            
+
             var oldRoleS = (await _userManager.GetRolesAsync(user)).ToArray();
             var deleteRoles = oldRoleS.Where(r => !RoleNames.Contains(r));
             var addRoles = RoleNames.Where(r => !oldRoleS.Contains(r));
-            
-            var resultDel = await _userManager.RemoveFromRolesAsync(user,deleteRoles);
-            if(!resultDel.Succeeded)
+
+            selectList = new SelectList(_rolenManager.Roles.Select(r => r.Name));
+            await GetClaim(id);
+
+            var resultDel = await _userManager.RemoveFromRolesAsync(user, deleteRoles);
+            if (!resultDel.Succeeded)
             {
-                resultDel.Errors.ToList().ForEach(er => {
-                    ModelState.AddModelError(string.Empty,er.Description);
+                resultDel.Errors.ToList().ForEach(er =>
+                {
+                    ModelState.AddModelError(string.Empty, er.Description);
                 });
                 return Page();
             }
-            
-            var resultAdd = await _userManager.AddToRolesAsync(user,addRoles);
-            if(!resultAdd.Succeeded)
+
+            var resultAdd = await _userManager.AddToRolesAsync(user, addRoles);
+            if (!resultAdd.Succeeded)
             {
-                resultAdd.Errors.ToList().ForEach(er => {
-                    ModelState.AddModelError(string.Empty,er.Description);
+                resultAdd.Errors.ToList().ForEach(er =>
+                {
+                    ModelState.AddModelError(string.Empty, er.Description);
                 });
                 return Page();
             }

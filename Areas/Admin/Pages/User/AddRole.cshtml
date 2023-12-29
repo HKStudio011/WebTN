@@ -16,17 +16,51 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-group mb-3">
                 <label asp-for="RoleNames" class="form-label"></label>
-                @Html.ListBoxFor( m => m.RoleNames,@Model.selectList, new {
-                    id = "id-select-roles",
-                    @* @class = "form-control h-auto"  *@
-                    @class ="w-100"
-                })
+                @Html.ListBoxFor(m => m.RoleNames, @Model.selectList, new
+                    {
+                        id = "id-select-roles",
+                        @* @class = "form-control h-auto" *@
+                        @class = "w-100"
+                    })
                 <span asp-validation-for="RoleNames" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Thêm</button>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
             <a class="btn btn-primary" asp-page="./Index">Danh sách thành viên</a>
         </form>
+        <Hr>
+        </Hr>
+        <p>Các claim từ role.</p>
+        @if (Model.RoleClaims.Count > 0)
+        {
+            <ul>
+                @foreach (var claim in Model.RoleClaims)
+                {
+                    <li>
+                        @claim.ClaimType : @claim.ClaimValue
+                    </li>
+                }
+            </ul>
+
+        }
+        <p>Các claim của user.
+            <a asp-page="./EditUserClaim" asp-page-handler="AddClaim" asp-route-userid="@Model.user.Id">Thêm user
+                claim</a>
+        </p>
+        @if (Model.UserClaims.Count > 0)
+        {
+            <ul>
+                @foreach (var claim in Model.UserClaims)
+                {
+                    <li>
+                        <a asp-page="./EditUserClaim" asp-page-handler="EditClaim" asp-route-claimid="@claim.Id">
+                            @claim.ClaimType : @claim.ClaimValue
+                        </a>
+                    </li>
+                }
+            </ul>
+
+        }
     </div>
 </div>
 
@@ -37,9 +71,9 @@
     <script>
         $('#id-select-roles').multipleSelect(
             {
-                selecAll:false,
-                keepOpen:false,
-                isOpen:false,
+                selecAll: false,
+                keepOpen: false,
+                isOpen: false,
             }
         );
     </script>

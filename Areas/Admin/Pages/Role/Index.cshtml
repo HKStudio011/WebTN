@@ -21,12 +21,19 @@
         <th>Tên role</th>
         <th>Tác vụ</th>
     </tr>
-    @foreach(var role in Model.IdentityRoles)
+    @foreach (var role in Model.IdentityRoles)
     {
         <tr>
-            <td>@role.Name</td>
             <td>
-                <a class="btn btn-success btn-sm" asp-page="./Edit" asp-route-roleid="@role.Id" >Cập nhật</a>
+                <p>@role.Name</p>
+                @foreach (var clain in role.Claims)
+                {
+                    <small>@clain</small>
+                    <br>
+                }
+            </td>
+            <td>
+                <a class="btn btn-success btn-sm" asp-page="./Edit" asp-route-roleid="@role.Id">Cập nhật</a>
                 <a class="btn btn-danger btn-sm" asp-page="./Delete" asp-route-roleid="@role.Id">Xoá</a>
             </td>
         </tr>

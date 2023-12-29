@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using WebTN.Models;
 
 namespace WebTN.Admin.Role
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Policy = "AllowEditRole")]
+    //[Authorize(Roles ="Admin")]
     public class EditModel : RolePageModel
     {
         public class InputModel
@@ -21,6 +23,7 @@ namespace WebTN.Admin.Role
         [BindProperty]
         public InputModel inputModel { get; set; }
 
+        public List<IdentityRoleClaim<string>> Claims { get; set; }
         public IdentityRole role { get; private set; }
         public EditModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
         {
@@ -38,7 +41,7 @@ namespace WebTN.Admin.Role
                 {
                     RoleName = role.Name,
                 };
-
+                Claims = await _myBlogContext.RoleClaims.Where(rc => rc.RoleId == role.Id).ToListAsync();
                 return Page();
             }
 

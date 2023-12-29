@@ -7,7 +7,7 @@ using WebTN.Models;
 
 namespace WebTN.Admin.Role
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class DeleteModel : RolePageModel
     {
 
