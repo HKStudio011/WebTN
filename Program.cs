@@ -1,8 +1,10 @@
 using MailKit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using WebTN.Models;
+using WebTN.Security.Requirements;
 using WebTN.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +91,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/khongthetrycap/";
 });
 
+builder.Services.AddTransient<IAuthorizationHandler, AppAuthorizationHandler>();
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AllowEditRole", policyBuilder =>
@@ -100,6 +104,25 @@ builder.Services.AddAuthorization(options =>
         // policyBuilder.RequireClaim("manager.role", "add", "update");
         policyBuilder.RequireClaim("canedit", "user");
     });
+
+    options.AddPolicy("InGenZ", policyBuilder =>
+    {
+        policyBuilder.RequireAuthenticatedUser();
+        policyBuilder.Requirements.Add(new GenZRequirement());
+    });
+
+    options.AddPolicy("ShowAdminMenu", policyBuildern =>
+    {
+        policyBuildern.RequireAuthenticatedUser();
+        policyBuildern.RequireRole("Admin");
+    });
+
+    options.AddPolicy("CanUpdateArticle", policyBuilder =>
+    {
+        policyBuilder.RequireAuthenticatedUser();
+        policyBuilder.Requirements.Add(new ArticleUpdateRequirement());
+    });
+    
 });
 
 var app = builder.Build();
