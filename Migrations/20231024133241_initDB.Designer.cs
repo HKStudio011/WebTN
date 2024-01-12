@@ -11,7 +11,7 @@ using WebTN.Models;
 
 namespace WebTN.Migrations
 {
-    [DbContext(typeof(MyBlogContext))]
+    [DbContext(typeof(AppDBContext))]
     [Migration("20231024133241_initDB")]
     partial class initDB
     {

@@ -14,7 +14,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddOptions();
 
 
-builder.Services.AddDbContext<MyBlogContext>(options =>
+builder.Services.AddDbContext<AppDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyBlogContext"));
 });
@@ -75,7 +75,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 // Use UI custom
 builder.Services.AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<MyBlogContext>()
+                .AddEntityFrameworkStores<AppDBContext>()
                 .AddDefaultTokenProviders();
 
 // Use UI default
@@ -122,7 +122,7 @@ builder.Services.AddAuthorization(options =>
         policyBuilder.RequireAuthenticatedUser();
         policyBuilder.Requirements.Add(new ArticleUpdateRequirement());
     });
-    
+
 });
 
 var app = builder.Build();

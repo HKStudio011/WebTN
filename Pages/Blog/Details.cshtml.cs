@@ -13,9 +13,9 @@ namespace WebTN.Pages_Blog
     [Authorize(Policy = "InGenZ")] // nam sinh tu 1997 - 2012
     public class DetailsModel : PageModel
     {
-        private readonly WebTN.Models.MyBlogContext _context;
+        private readonly WebTN.Models.AppDBContext _context;
 
-        public DetailsModel(WebTN.Models.MyBlogContext context)
+        public DetailsModel(WebTN.Models.AppDBContext context)
         {
             _context = context;
         }

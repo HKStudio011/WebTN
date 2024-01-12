@@ -13,10 +13,10 @@ namespace WebTN.Pages_Blog
 {
     public class EditModel : PageModel
     {
-        private readonly WebTN.Models.MyBlogContext _context;
+        private readonly WebTN.Models.AppDBContext _context;
         private readonly IAuthorizationService _authorizationService;
 
-        public EditModel(WebTN.Models.MyBlogContext context, IAuthorizationService authorizationService)
+        public EditModel(WebTN.Models.AppDBContext context, IAuthorizationService authorizationService)
         {
             _context = context;
             _authorizationService = authorizationService;
@@ -55,7 +55,7 @@ namespace WebTN.Pages_Blog
             try
             {
                 var result = await _authorizationService.AuthorizeAsync(this.User, Article, "CanUpdateArticle");
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
                     await _context.SaveChangesAsync();
                 }

@@ -25,7 +25,7 @@ namespace WebTN.Admin.Role
 
         public List<IdentityRoleClaim<string>> Claims { get; set; }
         public IdentityRole role { get; private set; }
-        public EditModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
+        public EditModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext) : base(roleManager, myBlogContext)
         {
         }
 

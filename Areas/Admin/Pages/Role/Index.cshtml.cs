@@ -18,7 +18,7 @@ namespace WebTN.Admin.Role
 
         public List<RoleModel> IdentityRoles { get; set; }
 
-        public IndexModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
+        public IndexModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext) : base(roleManager, myBlogContext)
         {
         }
 

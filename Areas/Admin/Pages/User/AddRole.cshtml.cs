@@ -23,7 +23,7 @@ namespace WebTN.Admin.User
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _rolenManager;
-        private readonly MyBlogContext _myBlogContext;
+        private readonly AppDBContext _myBlogContext;
 
 
 
@@ -31,7 +31,7 @@ namespace WebTN.Admin.User
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             RoleManager<IdentityRole> rolenManager,
-            MyBlogContext myBlogContext)
+            AppDBContext myBlogContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;

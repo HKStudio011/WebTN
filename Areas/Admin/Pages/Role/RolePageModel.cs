@@ -8,11 +8,11 @@ namespace WebTN.Admin.Role
     public class RolePageModel : PageModel
     {
         protected readonly RoleManager<IdentityRole> _roleManager;
-        protected readonly MyBlogContext _myBlogContext;
+        protected readonly AppDBContext _myBlogContext;
 
         [TempData]
         public string StatusMessage { get; set; }
-        public RolePageModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext)
+        public RolePageModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext)
         {
             _roleManager = roleManager;
             _myBlogContext = myBlogContext;

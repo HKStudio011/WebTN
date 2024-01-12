@@ -11,9 +11,9 @@ namespace WebTN.Pages_Blog
 {
     public class CreateModel : PageModel
     {
-        private readonly WebTN.Models.MyBlogContext _context;
+        private readonly WebTN.Models.AppDBContext _context;
 
-        public CreateModel(WebTN.Models.MyBlogContext context)
+        public CreateModel(WebTN.Models.AppDBContext context)
         {
             _context = context;
         }
@@ -25,12 +25,12 @@ namespace WebTN.Pages_Blog
 
         [BindProperty]
         public Article Article { get; set; } = default!;
-        
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Articles == null || Article == null)
+            if (!ModelState.IsValid || _context.Articles == null || Article == null)
             {
                 return Page();
             }

@@ -11,30 +11,30 @@ namespace WebTN.Pages_Blog
 {
     public class DeleteModel : PageModel
     {
-        private readonly WebTN.Models.MyBlogContext _context;
+        private readonly WebTN.Models.AppDBContext _context;
 
-        public DeleteModel(WebTN.Models.MyBlogContext context)
+        public DeleteModel(WebTN.Models.AppDBContext context)
         {
             _context = context;
         }
 
         [BindProperty]
-      public Article Article { get; set; } = default!;
+        public Article Article { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null || _context.Articles == null)
             {
-                return Content("Không tìm thấy bài viết");;
+                return Content("Không tìm thấy bài viết"); ;
             }
 
             var article = await _context.Articles.FirstOrDefaultAsync(m => m.ID == id);
 
             if (article == null)
             {
-                return Content("Không tìm thấy bài viết");;
+                return Content("Không tìm thấy bài viết"); ;
             }
-            else 
+            else
             {
                 Article = article;
             }
@@ -45,7 +45,7 @@ namespace WebTN.Pages_Blog
         {
             if (id == null || _context.Articles == null)
             {
-                return Content("Không tìm thấy bài viết");;
+                return Content("Không tìm thấy bài viết"); ;
             }
             var article = await _context.Articles.FindAsync(id);
 

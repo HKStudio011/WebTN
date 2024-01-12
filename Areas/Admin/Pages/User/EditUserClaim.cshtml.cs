@@ -11,7 +11,7 @@ namespace WebTN.Admin.User
     public class EditUserClaimModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly MyBlogContext _myBlogContext;
+        private readonly AppDBContext _myBlogContext;
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -36,7 +36,7 @@ namespace WebTN.Admin.User
         public InputModel inputModel { get; set; }
 
 
-        public EditUserClaimModel(MyBlogContext myBlogContext, UserManager<AppUser> userManager)
+        public EditUserClaimModel(AppDBContext myBlogContext, UserManager<AppUser> userManager)
         {
             _myBlogContext = myBlogContext;
             _userManager = userManager;

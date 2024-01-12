@@ -12,7 +12,7 @@ namespace WebTN.Admin.Role
     {
 
         public IdentityRole role { get; private set; }
-        public DeleteModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
+        public DeleteModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext) : base(roleManager, myBlogContext)
         {
         }
 

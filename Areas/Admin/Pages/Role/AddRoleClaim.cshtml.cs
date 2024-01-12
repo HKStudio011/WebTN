@@ -28,7 +28,7 @@ namespace WebTN.Admin.Role
 
         public IdentityRole role { get; private set; }
 
-        public AddRoleClaimModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
+        public AddRoleClaimModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext) : base(roleManager, myBlogContext)
         {
         }
 

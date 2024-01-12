@@ -20,7 +20,7 @@ namespace WebTN.Admin.Role
 
         [BindProperty]
         public InputModel inputModel { get; set; }
-        public CreateModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
+        public CreateModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext) : base(roleManager, myBlogContext)
         {
         }
 

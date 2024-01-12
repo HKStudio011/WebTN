@@ -31,7 +31,7 @@ namespace WebTN.Admin.Role
 
         IdentityRoleClaim<string> claim;
 
-        public EditRoleClaimModel(RoleManager<IdentityRole> roleManager, MyBlogContext myBlogContext) : base(roleManager, myBlogContext)
+        public EditRoleClaimModel(RoleManager<IdentityRole> roleManager, AppDBContext myBlogContext) : base(roleManager, myBlogContext)
         {
         }
 

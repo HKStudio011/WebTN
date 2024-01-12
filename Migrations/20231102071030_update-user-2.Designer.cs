@@ -11,7 +11,7 @@ using WebTN.Models;
 
 namespace WebTN.Migrations
 {
-    [DbContext(typeof(MyBlogContext))]
+    [DbContext(typeof(AppDBContext))]
     [Migration("20231102071030_update-user-2")]
     partial class updateuser2
     {
